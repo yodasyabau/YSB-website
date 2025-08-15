@@ -1,0 +1,77 @@
+// Navigation SPA uniquement pour les liens de menu
+const menuLinks = document.querySelectorAll('nav ul li a[data-page]');
+const sections = document.querySelectorAll('main section');
+
+menuLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const page = link.getAttribute('data-page');
+    showSection(page);
+  });
+});
+
+function showSection(pageId) {
+  sections.forEach(sec => sec.classList.remove('active'));
+  const target = document.getElementById(pageId);
+  if(target) {
+    target.classList.add('active');
+    target.scrollIntoView({behavior:'smooth'});
+    animateText(target);
+  }
+}
+
+// Animation texte machine à écrire
+function animateText(section) {
+  const elements = section.querySelectorAll('p, li, h3');
+  elements.forEach(el => {
+    const text = el.textContent;
+    el.textContent = '';
+    let i = 0;
+    const interval = setInterval(() => {
+      el.textContent += text[i];
+      i++;
+      if(i >= text.length) clearInterval(interval);
+    }, 20);
+  });
+}
+
+// Boutons Pump.fun
+document.querySelectorAll('.btn-buy').forEach(btn => {
+  btn.addEventListener('click', () => {
+    window.open('https://pump.fun/3Hzxg2k1RVCfUSmRp5De9Gb2apy5yMG1KsjiksGgkiz4', '_blank');
+  });
+});
+
+// Iframe DexScreener auto-refresh
+const dexIframe = document.querySelector('#infos iframe');
+if(dexIframe) setInterval(() => { dexIframe.src = dexIframe.src; }, 15000);
+
+// Cookies popup
+function showCookiePopup() {
+  if(!localStorage.getItem('cookiesAccepted')) {
+    const popup = document.createElement('div');
+    popup.id = 'cookiePopup';
+    popup.innerHTML = `
+      <p>🍪 Nous utilisons des cookies pour améliorer votre expérience sur YSB.</p>
+      <button id="acceptCookies">Accepter</button>
+    `;
+    document.body.appendChild(popup);
+    document.getElementById('acceptCookies').addEventListener('click', () => {
+      localStorage.setItem('cookiesAccepted','true');
+      popup.remove();
+    });
+  }
+}
+window.addEventListener('load', showCookiePopup);
+
+// Roadmap animation scroll
+const roadmapItems = document.querySelectorAll('.roadmap-item');
+function checkRoadmap() {
+  const triggerBottom = window.innerHeight * 0.85;
+  roadmapItems.forEach(item => {
+    const itemTop = item.getBoundingClientRect().top;
+    if(itemTop < triggerBottom) item.classList.add('visible');
+  });
+}
+window.addEventListener('scroll', checkRoadmap);
+window.addEventListener('load', checkRoadmap);
